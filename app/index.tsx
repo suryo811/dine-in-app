@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Jingalala.</Text>
+      <Text className="text-purple-500 text-4xl font-bold">Jingalala.</Text>
     </View>
   );
 }
