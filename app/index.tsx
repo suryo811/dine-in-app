@@ -1,4 +1,5 @@
-import { Text, View } from "react-native";
+import { router } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   return (
@@ -10,6 +11,10 @@ export default function Index() {
       }}
     >
       <Text className="text-purple-500 text-4xl font-bold">Jingalala.</Text>
+
+      <TouchableOpacity onPress={() => router.push("/home")}>
+        <Text>Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 }
