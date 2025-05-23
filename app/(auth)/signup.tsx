@@ -27,15 +27,15 @@ const SignUp = () => {
           <Image
             source={require("@/assets/images/signup.png")}
             style={{
-              height: 200,
-              width: 200,
+              height: 220,
+              width: 220,
               borderRadius: 100,
             }}
           />
           <Formik initialValues={{ email: "", password: "", name: "" }} onSubmit={handleSignUp}>
             {({ handleChange, handleSubmit, handleBlur, values }) => {
               return (
-                <View className="w-3/4 mt-12">
+                <View className="w-3/4 mt-10">
                   {/* Name */}
                   <Text className="text-[#f49b33] text-xl font-bold mt-1">Name</Text>
                   <TextInput
