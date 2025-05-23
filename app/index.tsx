@@ -13,7 +13,7 @@ export default function Index() {
           />
           <View className="w-3/4">
             <TouchableOpacity
-              onPress={() => router.push("/")}
+              onPress={() => router.push("/signup")}
               className="bg-[#f49b33] text-black rounded-lg p-4 my-2"
             >
               <Text className="text-lg font-semibold text-center">Sign Up</Text>
@@ -28,7 +28,7 @@ export default function Index() {
 
             <View className="flex-row justify-center mt-4">
               <Text className="text-lg text-white">Already have an account?</Text>
-              <TouchableOpacity onPress={() => router.push("/")}>
+              <TouchableOpacity onPress={() => router.push("/signin")}>
                 <Text className="text-[#f49b33] text-lg font-semibold"> Sign In</Text>
               </TouchableOpacity>
             </View>
