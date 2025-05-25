@@ -28,6 +28,10 @@ export default function Home() {
       </TouchableOpacity>
     );
   };
+
+  // filter restaurants with id > 2
+  const filteredRestaurants = restaurants.filter((restaurant) => restaurant.id > 2);
+
   return (
     <SafeAreaView style={{ backgroundColor: "#2b2b2b" }}>
       <View className="items-center">
@@ -61,7 +65,7 @@ export default function Home() {
 
         {restaurants.length > 0 ? (
           <FlatList
-            data={restaurants}
+            data={filteredRestaurants}
             horizontal
             keyExtractor={(item) => item.id.toString()}
             showsHorizontalScrollIndicator={false}
