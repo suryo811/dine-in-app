@@ -1,4 +1,7 @@
+import { db } from "@/config/firebase";
 import { LinearGradient } from "expo-linear-gradient";
+import { collection, getDocs, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,9 +13,25 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { restaurants } from "../../store/restaurants";
 
 export default function Home() {
+  const [restaurants, setRestaurants] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchRestaurants();
+  }, []);
+
+  const fetchRestaurants = async () => {
+    const q = query(collection(db, "restaurants"));
+    const res = await getDocs(q);
+
+    // res.forEach((item) => {
+    //   setRestaurants((prev) => [...prev, item.data()]);
+    // });
+    const data: any[] = res.docs.map((doc) => doc.data());
+    setRestaurants(data);
+  };
+
   const renderItem = ({ item }: any) => {
     return (
       <TouchableOpacity
