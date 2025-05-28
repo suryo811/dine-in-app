@@ -1,8 +1,9 @@
 import { db } from "@/config/firebase";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import { useEffect, useState } from "react";
-import { Dimensions, Image, ScrollView, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,6 +14,9 @@ export default function Restaurant() {
   const [restaurantData, setRestaurantData] = useState<any>(restaurant);
   const [carouselData, setCarouselData] = useState<any[]>([]);
   const [slotsData, setSlotsData] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const carouselRef = useRef<any>(null);
 
   const width = Dimensions.get("window").width;
   const restaurantDocRef = doc(db, "restaurants", restaurantData.docId);
@@ -48,6 +52,21 @@ export default function Restaurant() {
     }
   };
 
+  // Navigation functions
+  const goToPrevious = () => {
+    if (carouselRef.current && carouselData.length > 0) {
+      const prevIndex = currentIndex === 0 ? carouselData.length - 1 : currentIndex - 1;
+      carouselRef.current.scrollTo({ index: prevIndex, animated: true });
+    }
+  };
+
+  const goToNext = () => {
+    if (carouselRef.current && carouselData.length > 0) {
+      const nextIndex = currentIndex === carouselData.length - 1 ? 0 : currentIndex + 1;
+      carouselRef.current.scrollTo({ index: nextIndex, animated: true });
+    }
+  };
+
   // Render function for carousel items
   const renderCarouselItem = ({ item, index }: { item: any; index: number }) => {
     return (
@@ -72,6 +91,33 @@ export default function Restaurant() {
     );
   };
 
+  // Add pagination dots component
+  const renderPaginationDots = () => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: 10,
+        }}
+      >
+        {carouselData.map((_, index) => (
+          <View
+            key={index}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: index === currentIndex ? "#f49b33" : "#666",
+              marginHorizontal: 4,
+            }}
+          />
+        ))}
+      </View>
+    );
+  };
+
   useEffect(() => {
     getCarouselData();
     getSlotsData();
@@ -88,20 +134,69 @@ export default function Restaurant() {
           {carouselData.length > 0 && (
             <View style={{ marginTop: 20 }}>
               <Text className="text-lg text-white font-semibold mb-3">Gallery</Text>
-              <Carousel
-                loop
-                width={width - 20}
-                height={200}
-                autoPlay={true}
-                data={carouselData}
-                scrollAnimationDuration={1000}
-                autoPlayInterval={3000}
-                renderItem={renderCarouselItem}
-                style={{
-                  width: width,
-                  alignSelf: "center",
-                }}
-              />
+
+              {/* Carousel with Navigation Buttons */}
+              <View style={{ position: "relative" }}>
+                <Carousel
+                  ref={carouselRef}
+                  loop
+                  width={width - 20}
+                  height={200}
+                  autoPlay={true}
+                  data={carouselData}
+                  scrollAnimationDuration={1000}
+                  autoPlayInterval={3000}
+                  renderItem={renderCarouselItem}
+                  onSnapToItem={(index) => setCurrentIndex(index)}
+                  style={{
+                    width: width,
+                    alignSelf: "center",
+                  }}
+                />
+
+                {/* Left Navigation Button */}
+                <TouchableOpacity
+                  onPress={goToPrevious}
+                  style={{
+                    position: "absolute",
+                    left: 20,
+                    top: "50%",
+                    transform: [{ translateY: -20 }],
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    borderRadius: 20,
+                    width: 40,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 1,
+                  }}
+                >
+                  <Ionicons name="chevron-back" size={24} color="#f49b33" />
+                </TouchableOpacity>
+
+                {/* Right Navigation Button */}
+                <TouchableOpacity
+                  onPress={goToNext}
+                  style={{
+                    position: "absolute",
+                    right: 20,
+                    top: "50%",
+                    transform: [{ translateY: -20 }],
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    borderRadius: 20,
+                    width: 40,
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 1,
+                  }}
+                >
+                  <Ionicons name="chevron-forward" size={24} color="#f49b33" />
+                </TouchableOpacity>
+              </View>
+
+              {/* Pagination Dots */}
+              {renderPaginationDots()}
             </View>
           )}
         </View>
