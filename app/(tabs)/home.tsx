@@ -1,7 +1,7 @@
 import { db } from "@/config/firebase";
 import { LinearGradient } from "expo-linear-gradient";
 import { collection, getDocs, query } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -25,14 +25,14 @@ export default function Home() {
     const q = query(collection(db, "restaurants"));
     const res = await getDocs(q);
 
-    // res.forEach((item) => {
-    //   setRestaurants((prev) => [...prev, item.data()]);
-    // });
-    const data: any[] = res.docs.map((doc) => doc.data());
+    const data: any[] = res.docs.map((doc) => ({
+      ...doc.data(),
+      docId: doc.id,
+    }));
     setRestaurants(data);
   };
 
-  const renderItem = ({ item }: any) => {
+  const RestaurantItem = React.memo(({ item }: any) => {
     return (
       <TouchableOpacity
         className="bg-[#5f5f5f] w-70 h-70 p-4 rounded-lg m-2"
@@ -46,7 +46,9 @@ export default function Home() {
         </Text>
       </TouchableOpacity>
     );
-  };
+  });
+
+  const renderItem = ({ item }: any) => <RestaurantItem item={item} />;
 
   // filter restaurants with id > 2
   const filteredRestaurants = restaurants.filter((restaurant) => restaurant.id > 2);
@@ -86,10 +88,13 @@ export default function Home() {
           <FlatList
             data={filteredRestaurants}
             horizontal
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.docId}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
             renderItem={renderItem}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={5}
+            windowSize={10}
           />
         ) : (
           <ActivityIndicator animating={true} size="large" color="#fb9b33" />
@@ -103,10 +108,13 @@ export default function Home() {
           <FlatList
             data={restaurants}
             horizontal
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.docId}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 50 }}
             renderItem={renderItem}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={5}
+            windowSize={10}
           />
         ) : (
           <ActivityIndicator animating={true} size="large" color="#fb9b33" />
