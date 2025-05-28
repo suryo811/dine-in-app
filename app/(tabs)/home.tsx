@@ -1,5 +1,6 @@
 import { db } from "@/config/firebase";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { collection, getDocs, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
@@ -35,6 +36,14 @@ export default function Home() {
   const RestaurantItem = React.memo(({ item }: any) => {
     return (
       <TouchableOpacity
+        onPress={() =>
+          router.push({
+            pathname: `/restaurant/${item.docId}` as any,
+            params: {
+              restaurantInfo: JSON.stringify(item),
+            },
+          })
+        }
         className="bg-[#5f5f5f] w-70 h-70 p-4 rounded-lg m-2"
         style={{ elevation: 6 }}
       >
