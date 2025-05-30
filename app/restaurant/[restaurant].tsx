@@ -1,9 +1,8 @@
 import { db } from "@/config/firebase";
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { Dimensions, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Image, ScrollView, Text, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -32,9 +31,8 @@ export default function Restaurant() {
       const carouselData = snapshot.docs.map((doc) => doc.data());
       const carouselDataImages = carouselData[0].images;
       setCarouselData(carouselDataImages);
-      console.log(carouselDataImages);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -46,24 +44,8 @@ export default function Restaurant() {
       const slotsData = snapshot.docs.map((doc) => doc.data());
 
       setSlotsData(slotsData);
-      console.log(slotsData);
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // Navigation functions
-  const goToPrevious = () => {
-    if (carouselRef.current && carouselData.length > 0) {
-      const prevIndex = currentIndex === 0 ? carouselData.length - 1 : currentIndex - 1;
-      carouselRef.current.scrollTo({ index: prevIndex, animated: true });
-    }
-  };
-
-  const goToNext = () => {
-    if (carouselRef.current && carouselData.length > 0) {
-      const nextIndex = currentIndex === carouselData.length - 1 ? 0 : currentIndex + 1;
-      carouselRef.current.scrollTo({ index: nextIndex, animated: true });
+      console.error(error);
     }
   };
 
@@ -79,7 +61,7 @@ export default function Restaurant() {
         }}
       >
         <Image
-          source={{ uri: item }} // adjust based on your data structure
+          source={{ uri: item }}
           style={{
             width: "100%",
             height: 200,
@@ -135,7 +117,7 @@ export default function Restaurant() {
             <View style={{ marginTop: 20 }}>
               <Text className="text-lg text-white font-semibold mb-3">Gallery</Text>
 
-              {/* Carousel with Navigation Buttons */}
+              {/* Carousel */}
               <View style={{ position: "relative" }}>
                 <Carousel
                   ref={carouselRef}
@@ -153,46 +135,6 @@ export default function Restaurant() {
                     alignSelf: "center",
                   }}
                 />
-
-                {/* Left Navigation Button */}
-                <TouchableOpacity
-                  onPress={goToPrevious}
-                  style={{
-                    position: "absolute",
-                    left: 20,
-                    top: "50%",
-                    transform: [{ translateY: -20 }],
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    borderRadius: 20,
-                    width: 40,
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    zIndex: 1,
-                  }}
-                >
-                  <Ionicons name="chevron-back" size={24} color="#f49b33" />
-                </TouchableOpacity>
-
-                {/* Right Navigation Button */}
-                <TouchableOpacity
-                  onPress={goToNext}
-                  style={{
-                    position: "absolute",
-                    right: 20,
-                    top: "50%",
-                    transform: [{ translateY: -20 }],
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    borderRadius: 20,
-                    width: 40,
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    zIndex: 1,
-                  }}
-                >
-                  <Ionicons name="chevron-forward" size={24} color="#f49b33" />
-                </TouchableOpacity>
               </View>
 
               {/* Pagination Dots */}
