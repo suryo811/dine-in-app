@@ -1,8 +1,9 @@
 import { db } from "@/config/firebase";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { Dimensions, Image, ScrollView, Text, View } from "react-native";
+import { Dimensions, Image, Linking, ScrollView, Text, View } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -31,6 +32,20 @@ export default function Restaurant() {
       const carouselData = snapshot.docs.map((doc) => doc.data());
       const carouselDataImages = carouselData[0].images;
       setCarouselData(carouselDataImages);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleOpenMap = async () => {
+    try {
+      const url = `https://maps.app.goo.gl/Q2zaTkKceEGQYWxn6`;
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.log("Cannot open URL");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -136,11 +151,24 @@ export default function Restaurant() {
                   }}
                 />
               </View>
-
               {/* Pagination Dots */}
               {renderPaginationDots()}
             </View>
           )}
+        </View>
+
+        <View className="flex-1 flex-row mt-2 p-2 gap-2">
+          <Ionicons onPress={handleOpenMap} name="location-sharp" size={25} color="#f49b33" />
+          <Text onPress={handleOpenMap} className=" text-white underline">
+            {restaurantData.address}
+          </Text>
+        </View>
+
+        <View className="flex-1 flex-row p-2 gap-2">
+          <Ionicons name="time" size={24} color="#f49b33" />
+          <Text className="text-white font-semibold">
+            {restaurantData.opening} - {restaurantData.closing}
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
