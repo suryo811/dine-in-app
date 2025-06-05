@@ -1,4 +1,5 @@
 import DatePicker from "@/components/restaurant/DatePicker";
+import GuestPicker from "@/components/restaurant/GuestPicker";
 import { db } from "@/config/firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -17,7 +18,9 @@ export default function Restaurant() {
   const [slotsData, setSlotsData] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Date and number of guests
   const [date, setDate] = useState<Date>(new Date());
+  const [selectedNumber, setSelectedNumber] = useState(2);
 
   const carouselRef = useRef<any>(null);
 
@@ -174,8 +177,22 @@ export default function Restaurant() {
           </Text>
         </View>
 
-        <View className="flex-1">
-          <DatePicker date={date} setDate={setDate} />
+        <View className="flex-1 border-2 border-[#f49b33] rounded-lg m-2 p-4">
+          {/* Date Picker */}
+          <View className="flex-row justify-between items-center gap-2">
+            <Ionicons name="calendar" size={24} color="#f49b33" />
+            <Text className="text-white font-semibold">Select Date</Text>
+            <View className="flex-1" />
+            <DatePicker date={date} setDate={setDate} />
+          </View>
+
+          {/* Number of guests */}
+          <View className="flex-row  mt-4 py-2 rounded-lg items-center gap-2">
+            <Ionicons name="people" size={24} color="#f49b33" />
+            <Text className="text-white font-semibold">Select number of guests</Text>
+            <View className="flex-1" />
+            <GuestPicker selectedNumber={selectedNumber} setSelectedNumber={setSelectedNumber} />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

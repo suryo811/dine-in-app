@@ -23,11 +23,9 @@ export default function DatePicker({
   };
 
   return (
-    <View className="flex-1 p-4 ">
-      <TouchableOpacity onPress={handlePress} className="bg-[#f49b33] p-3 rounded-lg">
-        <Text className="text-white text-center font-semibold">
-          Select Date: {date.toDateString()}
-        </Text>
+    <View className="flex-1 w-1/2 rounded-lg">
+      <TouchableOpacity onPress={handlePress} className="bg-[#f49b33] p-2 rounded-lg">
+        <Text className="text-white text-center font-semibold">{date.toDateString()}</Text>
       </TouchableOpacity>
 
       {showPicker && (
