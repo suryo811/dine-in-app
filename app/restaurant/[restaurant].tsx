@@ -1,3 +1,4 @@
+import DatePicker from "@/components/restaurant/DatePicker";
 import { db } from "@/config/firebase";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -15,6 +16,8 @@ export default function Restaurant() {
   const [carouselData, setCarouselData] = useState<any[]>([]);
   const [slotsData, setSlotsData] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [date, setDate] = useState<Date>(new Date());
 
   const carouselRef = useRef<any>(null);
 
@@ -169,6 +172,10 @@ export default function Restaurant() {
           <Text className="text-white font-semibold">
             {restaurantData.opening} - {restaurantData.closing}
           </Text>
+        </View>
+
+        <View className="flex-1">
+          <DatePicker date={date} setDate={setDate} />
         </View>
       </ScrollView>
     </SafeAreaView>
