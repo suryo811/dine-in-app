@@ -32,7 +32,7 @@ export default function FindSlots({
 
         {selectedSlot != null && (
           <View className="flex-1">
-            <TouchableOpacity onPress={() => setSlotsVisible(!slotsVisible)}>
+            <TouchableOpacity>
               <Text className="text-center text-white text-lg font-semibold bg-[#f49b33] p-2 m-2 rounded-lg">
                 Book Slot
               </Text>
