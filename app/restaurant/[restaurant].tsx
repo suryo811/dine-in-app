@@ -1,4 +1,5 @@
 import DatePicker from "@/components/restaurant/DatePicker";
+import FindSlots from "@/components/restaurant/FindSlots";
 import GuestPicker from "@/components/restaurant/GuestPicker";
 import { db } from "@/config/firebase";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +17,8 @@ export default function Restaurant() {
   const [restaurantData, setRestaurantData] = useState<any>(restaurant);
   const [carouselData, setCarouselData] = useState<any[]>([]);
   const [slotsData, setSlotsData] = useState<any[]>([]);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Date and number of guests
@@ -63,8 +66,7 @@ export default function Restaurant() {
       const q = query(slotsRef, where("ref_id", "==", restaurantDocRef));
       const snapshot = await getDocs(q);
       const slotsData = snapshot.docs.map((doc) => doc.data());
-
-      setSlotsData(slotsData);
+      setSlotsData(slotsData[0]?.slot);
     } catch (error) {
       console.error(error);
     }
@@ -145,7 +147,7 @@ export default function Restaurant() {
                   loop
                   width={width - 20}
                   height={200}
-                  autoPlay={true}
+                  autoPlay={false}
                   data={carouselData}
                   scrollAnimationDuration={1000}
                   autoPlayInterval={3000}
@@ -193,6 +195,16 @@ export default function Restaurant() {
             <View className="flex-1" />
             <GuestPicker selectedNumber={selectedNumber} setSelectedNumber={setSelectedNumber} />
           </View>
+        </View>
+
+        <View className="flex-1">
+          <FindSlots
+            date={date}
+            selectedNumber={selectedNumber}
+            slotsData={slotsData}
+            selectedSlot={selectedSlot}
+            setSelectedSlot={setSelectedSlot}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
