@@ -40,7 +40,5 @@ yarn-error.*
 
 app-example
 
-# firebase
-config/firebase.ts
 
 
