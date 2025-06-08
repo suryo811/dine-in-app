@@ -1,12 +1,50 @@
+import { auth } from "@/config/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Formik } from "formik";
-import { Image, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SignUp = () => {
-  const handleSignUp = (values: any) => {
-    console.log(values);
+  const handleSignUp = async (values: any) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+
+      // Set display name
+      await updateProfile(userCredential.user, {
+        displayName: values.name,
+      });
+
+      // get id token
+      const idToken = await userCredential.user.getIdToken();
+
+      // Store user data in AsyncStorage
+      const userData = {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: values.name,
+        idToken: idToken,
+        loginTime: new Date().toISOString(),
+      };
+
+      await AsyncStorage.setItem("userToken", idToken);
+      await AsyncStorage.setItem("userData", JSON.stringify(userData));
+      await AsyncStorage.setItem("isLoggedIn", "true");
+
+      console.log(await AsyncStorage.getItem("userData"));
+
+      // Navigate to home
+      router.replace("/(tabs)/home");
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong");
+      console.log(error);
+    }
   };
 
   return (
