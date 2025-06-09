@@ -1,14 +1,16 @@
 import { db } from "@/config/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, RefreshControl, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function History() {
   const [userEmail, setUserEmail] = useState("");
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const fetchUserEmail = async () => {
@@ -24,30 +26,35 @@ export default function History() {
     fetchUserEmail();
   }, []);
 
+  const fetchBookings = async () => {
+    if (!userEmail) return;
+
+    try {
+      setLoading(true);
+      const bookingCollectionRef = collection(db, "bookings");
+      const q = query(bookingCollectionRef, where("userEmail", "==", userEmail));
+      const querySnapshot = await getDocs(q);
+      const bookingList: any = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setBookings(bookingList);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // fetch bookings of the user
-    const fetchBookings = async () => {
-      if (!userEmail) return;
-
-      try {
-        setLoading(true);
-        const bookingCollectionRef = collection(db, "bookings");
-        const q = query(bookingCollectionRef, where("userEmail", "==", userEmail));
-        const querySnapshot = await getDocs(q);
-        const bookingList: any = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setBookings(bookingList);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBookings();
   }, [userEmail]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Refetch bookings
+    fetchBookings().finally(() => setRefreshing(false));
+  };
 
   const renderBookingItem = ({ item }: { item: any }) => {
     const bookingDate = new Date(item.date);
@@ -97,12 +104,30 @@ export default function History() {
               ListEmptyComponent={renderEmptyComponent}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 20 }}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={["#f49b33"]} // Android
+                  tintColor="#f49b33" // iOS
+                  title="Pull to refresh" // iOS
+                  titleColor="#f49b33" // iOS
+                />
+              }
             />
           )}
         </View>
       ) : (
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-white text-lg text-center">Please login to continue</Text>
+        <View className="flex-1 justify-center items-center gap-4">
+          <Text className="text-white font-bold text-2xl text-center">
+            Please login to continue
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.replace("/(auth)/signin")}
+            className="bg-[#f49b33] p-2 rounded-md w-1/2"
+          >
+            <Text className="text-white font-bold text-2xl text-center">Login</Text>
+          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
