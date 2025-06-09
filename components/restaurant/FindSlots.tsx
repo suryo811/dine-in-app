@@ -1,5 +1,8 @@
+import { db } from "@/config/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addDoc, collection } from "firebase/firestore";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function FindSlots({
   date,
@@ -7,6 +10,7 @@ export default function FindSlots({
   slotsData,
   selectedSlot,
   setSelectedSlot,
+  restaurantName,
 }: any) {
   const [slotsVisible, setSlotsVisible] = useState(false);
 
@@ -16,6 +20,35 @@ export default function FindSlots({
       setSelectedSlot(null);
     } else {
       setSelectedSlot(slot);
+    }
+  };
+
+  const handleBookSlot = async () => {
+    try {
+      const userData = await AsyncStorage.getItem("userData");
+      if (!userData) {
+        Alert.alert("Please login to book a slot");
+        return;
+      }
+      const userDataObj = JSON.parse(userData);
+      const userEmail = userDataObj.email;
+
+      if (!userEmail) {
+        Alert.alert("Please login to book a slot");
+        return;
+      }
+
+      const docRef = await addDoc(collection(db, "bookings"), {
+        userEmail,
+        slot: selectedSlot,
+        date: date.toISOString(),
+        guestCount: selectedNumber,
+        restaurantName: restaurantName,
+      });
+
+      Alert.alert("Slot booked successfully");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -32,7 +65,7 @@ export default function FindSlots({
 
         {selectedSlot != null && (
           <View className="flex-1">
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleBookSlot}>
               <Text className="text-center text-white text-lg font-semibold bg-[#f49b33] p-2 m-2 rounded-lg">
                 Book Slot
               </Text>

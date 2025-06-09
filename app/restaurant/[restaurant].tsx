@@ -204,6 +204,7 @@ export default function Restaurant() {
             slotsData={slotsData}
             selectedSlot={selectedSlot}
             setSelectedSlot={setSelectedSlot}
+            restaurantName={restaurantData.name}
           />
         </View>
       </ScrollView>

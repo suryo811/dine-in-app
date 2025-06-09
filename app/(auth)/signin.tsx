@@ -28,8 +28,6 @@ const SignIn = () => {
       await AsyncStorage.setItem("userData", JSON.stringify(userData));
       await AsyncStorage.setItem("isLoggedIn", "true");
 
-      console.log("User signed in:", await AsyncStorage.getItem("userData"));
-
       // Navigate to home
       router.replace("/(tabs)/home");
     } catch (error: any) {
